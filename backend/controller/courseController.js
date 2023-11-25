@@ -1,27 +1,31 @@
-// const router=require("../router/courseRouter")
+const createCourse = (req, res) => {
+  res.send("createCourse...");
+};
 
-const deleteLect=(req,res)=>{
-    res.send("deleteLect...")
-}
+const addLectures = (req, res) => {
+  res.send("addLectures...");
+};
 
-const deleteCourse=(req,res)=>{
-    res.send("deleteCourse...")
-}
+const getAllCourses = (req, res) => {
+  res.send("getAllCourses...");
+};
 
-const getCourseLect=(req,res)=>{
-    res.send("getCourseLect...")
-}
+const getCourseLect = (req, res) => {
+  res.send("getCourseLect...");
+};
+const deleteCourse = (req, res) => {
+  res.send("deleteCourse...");
+};
 
-const getAllCourses=(req,res)=>{
-    res.send("getAllCourses...")
-}
+const deleteLect = (req, res) => {
+  res.send("deleteLect...");
+};
 
-const addLectures=(req,res)=>{
-    res.send("addLectures...")
-}
-
-const createCourse=(req,res)=>{
-    res.send("createCourse...")
-}
-
-module.exports={createCourse,addLectures,getAllCourses,getCourseLect,deleteCourse,deleteLect}
+module.exports = {
+  createCourse,
+  addLectures,
+  getAllCourses,
+  getCourseLect,
+  deleteCourse,
+  deleteLect,
+};
