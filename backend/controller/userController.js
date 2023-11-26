@@ -1,31 +1,50 @@
 const User = require("../model/userModel");
-const jwt=require("jsonwebtoken");
-const bcrypt=require("bcryptjs")
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 const login = async (req, res) => {
-  const {email,password}=req.body;
-  const user = await User.findOne({ email }); 
-  const passcmp=bcrypt.compareSync(password,user.password);
-  if(passcmp==true){
-    return res.send("you  are logged in ")
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Please provide proper information", success: false });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
+    }
+    const passcmp = bcrypt.compareSync(password, user.password);
+    if (!passcmp) {
+      return res
+        .status(400)
+        .json({ message: "Please provide proper password.", success: false });
+    }
+    const token = jwt.sign({ id: user._id }, "shww");
+    return res.status(200).json({ user, token, success: true });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", success: false });
   }
-  return res.send("please provide proper password");
 };
 const signup = async (req, res) => {
   try {
     const { contactNumber, password, fullname, email } = req.body;
-    const salt=bcrypt.genSaltSync(18);
-    const hashPwd=bcrypt.hashSync(password,salt);
+    const salt = bcrypt.genSaltSync(18);
+    const hashPwd = bcrypt.hashSync(password, salt);
     const user = await User.create({
       contactNumber,
-      password:hashPwd,
+      password: hashPwd,
       fullname,
       email,
     });
-    const token=jwt.sign({id:user._id},"shww")
-    return res.status(200).json({ success: true, user ,token});
+    const token = jwt.sign({ id: user._id }, "shww");
+    return res.status(200).json({ success: true, user, token });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -58,9 +77,11 @@ const changeRole = async (req, res) => {
         .status(400)
         .json({ message: "Please provide Id", success: false });
     }
-    const user = await User.findOneAndUpdate({ _id }, {role: req.body.role,});
-    if(user==null){
-      return res.json({message:"user not found",success:false})
+    const user = await User.findOneAndUpdate({ _id }, { role: req.body.role });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
     }
     return res.status(200).json({ user, success: true });
   } catch (error) {
