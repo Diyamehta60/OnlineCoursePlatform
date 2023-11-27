@@ -24,7 +24,7 @@ const courseSchema = mongoose.Schema({
         required: [true, "enter the url of lecture"],
       },
       notes: {
-        type: string,
+        type: String,
       },
     },
   ],
@@ -54,4 +54,4 @@ const courseSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Course", courseSchema);
+module.exports = mongoose.model("course", courseSchema);
