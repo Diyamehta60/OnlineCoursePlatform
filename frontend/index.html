@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Buy your courses...</h1>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        let razorKey;
+        let options = {};
+        let order_id;
+
+        const fetchData = async () => {
+            const anotherReponse = await fetch("http://localhost:8000/api/v1/payment/buy", {
+                method: "POST",
+                headers: {
+                    'Authorization': "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1Njc2YTY4ZjZkMGQ4NWVmZGQ5MTcwNSIsImlhdCI6MTcwMTI3NjMyNH0.TwQrs2RKvnFKQg5-TSH6HmJKvDwH5pMVMe_RY4Nu52s"
+                },
+            });
+            const anotherJsonResponse = await anotherReponse.json();
+            order_id = anotherJsonResponse.order_id;
+            console.log(order_id);
+            createRazorpay();
+        };
+
+        const createRazorpay = () => {
+            options = {
+                key: razorKey, // Enter the Key ID generated from the Dashboard
+                amount: "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                currency: "INR",
+                name: "Acme Corp",
+                description: "Test Transaction",
+                // image: "https://example.com/your_logo",
+                order_id: order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                handler: async function (response) {
+                    const r = await fetch("http://localhost:8000/api/v1/payment/verifypayment", {
+                        method: "POST",
+                        headers: {
+                            'Authorization': "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1Njc2YTY4ZjZkMGQ4NWVmZGQ5MTcwNSIsImlhdCI6MTcwMTI3NjMyNH0.TwQrs2RKvnFKQg5-TSH6HmJKvDwH5pMVMe_RY4Nu52s",
+                            'Content-Type': "application/json"
+                        },
+                        body: JSON.stringify({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature,
+                            courseId: "65630d9feb49149fcf5f6695"
+                        })
+                    });
+                    const jr = await r.json();
+                    console.log(jr);
+                },
+                prefill: {
+                    name: "Gaurav Kumar",
+                    email: "gaurav.kumar@example.com",
+                    contact: "9000090000"
+                },
+                notes: {
+                    address: "Razorpay Corporate Office"
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+            const rzp1 = new window.Razorpay(options);
+            rzp1.open();
+        };
+
+        const getKey = async () => {
+            try {
+                const response = await fetch("http://localhost:8000/api/v1/payment/razorkey", {
+                    headers: {
+                        'Authorization': "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1Njc2YTY4ZjZkMGQ4NWVmZGQ5MTcwNSIsImlhdCI6MTcwMTI3NjMyNH0.TwQrs2RKvnFKQg5-TSH6HmJKvDwH5pMVMe_RY4Nu52s"
+                    }
+                });
+                const jsonResponse = await response.json();
+                const { key } = jsonResponse;
+                razorKey = key;
+                console.log(razorKey);
+                fetchData(); // Call fetchData only after the key is retrieved
+            } catch (error) {
+                console.error("Error fetching Razorpay key:", error);
+            }
+        };
+
+        getKey();
+    </script>
+</body>
+
+</html>
