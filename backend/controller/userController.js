@@ -1,15 +1,16 @@
+require("dotenv").config();
 const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 const login = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ message: "Please provide proper information", success: false });
+  }
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Please provide proper information", success: false });
-    }
     const user = await User.findOne({ email });
     if (!user) {
       return res
@@ -22,7 +23,7 @@ const login = async (req, res) => {
         .status(400)
         .json({ message: "Please provide proper password.", success: false });
     }
-    const token = jwt.sign({ id: user._id }, "shww");
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     return res.status(200).json({ user, token, success: true });
   } catch (error) {
     return res
@@ -33,7 +34,7 @@ const login = async (req, res) => {
 const signup = async (req, res) => {
   try {
     const { contactNumber, password, fullname, email } = req.body;
-    const salt = bcrypt.genSaltSync(18);
+    const salt = bcrypt.genSaltSync(10);
     const hashPwd = bcrypt.hashSync(password, salt);
     const user = await User.create({
       contactNumber,
@@ -41,7 +42,7 @@ const signup = async (req, res) => {
       fullname,
       email,
     });
-    const token = jwt.sign({ id: user._id }, "shww");
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     return res.status(200).json({ success: true, user, token });
   } catch (error) {
     console.log(error);
