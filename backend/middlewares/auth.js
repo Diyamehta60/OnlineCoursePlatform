@@ -1,30 +1,29 @@
-const jwt = require("jsonwebtoken")
-const userModel=require("../model/userModel")
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const User = require("../model/userModel");
 
-
-const isloggin=async(req,res,next)=>{
-    const authToken=req.headers.authorization
-    if(authToken==null){
-       return res.send("provide a token")
-    }
-    const token=authToken.split(" ")[1]
-    const Decoded=jwt.verify(token,"shww")
-    const {id}=Decoded
-    const user=await userModel.findById(id)//jo user he usko ye aga r valid hua to dedenge 
-    req.user=user
-    next()
-    // res.json(user)
-    
-}
-const isAdmin=(req,res,next)=>{
-    const user=req.user
-    console.log(req.user)
-    const userRole=user.role
-    if(userRole=="admin"){
-        next();
-    }
-    else{
-        res.send("you are not admin")
-    }
-}
-module.exports={isloggin,isAdmin}
+const isloggin = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer")) {
+    return res
+      .status(401)
+      .json({ msg: "Token is not provided", success: false });
+  }
+  try {
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { _id } = decoded;
+    req.user = await User.findById(_id);
+    next();
+  } catch (error) {
+    return res.json({ success: false, msg: "Invalid Token" });
+  }
+};
+const isAdmin = (req, res, next) => {
+  if (req.user.accountType == "admin") {
+    next();
+  } else {
+    return res.json({ success: false, msg: "You are not an admin" });
+  }
+};
+module.exports = { isloggin, isAdmin };
