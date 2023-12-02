@@ -1,9 +1,16 @@
 require("dotenv").config();
 const express = require("express");
+const cloudinary=require("cloudinary").v2
 const app = express();
 const connectDB = require("./db/db");
 const cors = require("cors");
-
+const expressFileUpload=require("express-fileupload")
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET
+})
+app.use(expressFileUpload({useTempFiles:true}))
 app.use(express.json());
 app.use(cors());
 

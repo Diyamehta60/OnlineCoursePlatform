@@ -2,6 +2,7 @@ require("dotenv").config();
 const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const cloudinary=require("cloudinary").v2
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -132,6 +133,23 @@ const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+const profilePic=async(req,res)=>{
+  // res.send("adding pic")
+  const result=await cloudinary.uploader.upload(req.files.image.tempFilePath,{
+    use_filename:true,
+  })
+  console.log(req.user)
+  // const user=await User.findByIdAndUpdate(req.user._id,{
+  //   profile_url:result.secure_url
+  // })
+  res.json({
+    image:{
+      src:result.secure_url
+    }
+  })
+
+}
 module.exports = {
   login,
   signup,
@@ -139,4 +157,5 @@ module.exports = {
   changeRole,
   getProfile,
   updateProfile,
+  profilePic,
 };

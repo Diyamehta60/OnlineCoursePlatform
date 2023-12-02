@@ -16,6 +16,10 @@ const userSchema = mongoose.Schema({
     required: [true, "please enter password."],
   },
   // skills,
+  profile_url:{
+    type:String,
+    
+  },
   skills: [
     {
       type: String,
