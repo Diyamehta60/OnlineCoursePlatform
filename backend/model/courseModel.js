@@ -8,20 +8,16 @@ const courseSchema = mongoose.Schema({
     type: String,
     required: [true, "enter description about the course"],
   },
-  
   lectures: [
     {
       title: {
         type: String,
-        required: [true, "enter lecture title"],
       },
       description: {
         type: String,
-        required: [true, "enter lecture description"],
       },
       video: {
         type: String,
-        required: [true, "enter the url of lecture"],
       },
       notes: {
         type: String,
