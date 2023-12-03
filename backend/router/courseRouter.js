@@ -7,7 +7,7 @@ const {
   deleteCourse,
   deleteLect,
 } = require("../controller/courseController");
-const { isloggin, isAdmin } = require("../Middlewares/auth");
+const { isloggin, isAdmin } = require("../middlewares/auth");
 const router = express.Router();
 
 // only by admin if logged in
@@ -27,5 +27,6 @@ router.route("/deleteCourse").delete(isloggin,isAdmin,deleteCourse);
 
 // only by admin if logged in
 router.route("/deleteLect").delete(isloggin,isAdmin,deleteLect);
+
 
 module.exports = router;

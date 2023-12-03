@@ -8,7 +8,7 @@ const {
   changeRole,
   profilePic
 } = require("../controller/userController");
-const { isloggin } = require("../Middlewares/auth");
+const { isloggin } = require("../middlewares/auth");
 
 const router = express.Router();
 router.route("/login").post(login);

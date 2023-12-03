@@ -24,7 +24,7 @@ const login = async (req, res) => {
         .status(400)
         .json({ message: "Please provide proper password.", success: false });
     }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
     return res.status(200).json({ user, token, success: true });
   } catch (error) {
     return res
@@ -43,7 +43,7 @@ const signup = async (req, res) => {
       fullname,
       email,
     });
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
     return res.status(200).json({ success: true, user, token });
   } catch (error) {
     console.log(error);
@@ -140,9 +140,9 @@ const profilePic=async(req,res)=>{
     use_filename:true,
   })
   console.log(req.user)
-  // const user=await User.findByIdAndUpdate(req.user._id,{
-  //   profile_url:result.secure_url
-  // })
+  const user=await User.findByIdAndUpdate(req.user._id,{
+    profile_url:result.secure_url
+  })
   res.json({
     image:{
       src:result.secure_url

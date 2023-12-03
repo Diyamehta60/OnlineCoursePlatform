@@ -4,7 +4,7 @@ const {
   verifyPayment,
   getRazorKey,
 } = require("../controller/paymentController");
-const { isloggin } = require("../Middlewares/auth");
+const { isloggin } = require("../middlewares/auth");
 const router = express.Router();
 
 router.route("/buy").post(isloggin, buyCourse);

@@ -1,4 +1,5 @@
 const Course = require("../model/courseModel");
+const cloudinary=require("cloudinary").v2
 const createCourse = async (req, res) => {
   try {
     const { createrName, category, poster, lectures, description, title } =
@@ -33,12 +34,16 @@ const createCourse = async (req, res) => {
 
 const addLectures = async (req, res) => {
   try {
-    const { video, description, title, _id } = req.body;
+    const {description, title, _id } = req.body;
+    const video=req.files.video
     if (!video || !description || !title || !_id) {
       return res
         .status(400)
         .json({ message: "Please Provide proper Information", success: false });
     }
+    const video_url=await cloudinary.uploader.upload(video,{
+      resource_type:"video"
+    })
     const updatedCourse = await Course.findOneAndUpdate(
       { _id },
       {
@@ -46,7 +51,7 @@ const addLectures = async (req, res) => {
           lectures: {
             title,
             description,
-            video,
+            video:video_url.secure_url,
           },
         },
       },

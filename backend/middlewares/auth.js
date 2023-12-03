@@ -20,7 +20,7 @@ const isloggin = async (req, res, next) => {
   }
 };
 const isAdmin = (req, res, next) => {
-  if (req.user.accountType == "admin") {
+  if (req.user.role == "admin") {
     next();
   } else {
     return res.json({ success: false, msg: "You are not an admin" });
