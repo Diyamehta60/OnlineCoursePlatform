@@ -8,7 +8,6 @@ const createCourse = async (req, res) => {
       !createrName ||
       !category ||
       !poster ||
-      !lectures ||
       !description ||
       !title
     ) {
@@ -24,7 +23,6 @@ const createCourse = async (req, res) => {
       createrName,
       category,
       poster: posterUrl.secure_url,
-      lectures,
       description,
       title,
     });
