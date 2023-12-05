@@ -2,7 +2,7 @@ require("dotenv").config();
 const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const cloudinary=require("cloudinary").v2
+const cloudinary = require("cloudinary").v2;
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -134,22 +134,38 @@ const updateProfile = async (req, res) => {
   }
 };
 
-const profilePic=async(req,res)=>{
-  // res.send("adding pic")
-  const result=await cloudinary.uploader.upload(req.files.image.tempFilePath,{
-    use_filename:true,
-  })
-  console.log(req.user)
-  const user=await User.findByIdAndUpdate(req.user._id,{
-    profile_url:result.secure_url
-  })
-  res.json({
-    image:{
-      src:result.secure_url
+const profilePic = async (req, res) => {
+  try {
+    const image = req.files.image;
+    if (!image) {
+      return res
+        .status(400)
+        .json({ message: "Please provide Pfofile Image", success: false });
     }
-  })
+    const result = await cloudinary.uploader.upload(
+      req.files.image.tempFilePath,
+      {
+        use_filename: true,
+      }
+    );
+    const user = await User.findByIdAndUpdate(req.user._id, {
+      profile_url: result.secure_url,
+    });
 
-}
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User was not found", success: false });
+    }
+    res.status(200).json({
+      image: {
+        src: result.secure_url,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 module.exports = {
   login,
   signup,
